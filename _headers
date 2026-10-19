@@ -1,0 +1,9 @@
+# Netlify / Cloudflare Pages: always check for a fresh copy of these so updates reach everyone.
+/sw.js
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: no-cache
