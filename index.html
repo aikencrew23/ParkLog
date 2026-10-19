@@ -191,6 +191,24 @@ ol.log li.editing{display:block;background:var(--bg)}
 .head .right{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;padding:calc(20px + env(safe-area-inset-top,0px)) 12px calc(20px + env(safe-area-inset-bottom,0px));z-index:50;overflow-y:auto}
 .overlay[hidden]{display:none}
+.kbhide{position:fixed;right:10px;bottom:10px;z-index:55;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:600 .95rem/1 Barlow,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.18);cursor:pointer}
+.kbhide[hidden]{display:none}
+.kbhide svg{width:20px;height:20px}
+.numrow{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;margin-bottom:10px}
+.numrow[hidden]{display:none}
+.numrow button{min-height:42px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;font:700 1.35rem/1 "Barlow Condensed","Arial Narrow",sans-serif;cursor:pointer;touch-action:manipulation;padding:0;-webkit-user-select:none;user-select:none}
+.numrow button:active{background:var(--spruce);color:var(--spruce-ink);border-color:var(--spruce)}
+.pfxrow{display:flex;gap:4px;min-width:0}
+.pfxrow input{flex:1;min-width:0}
+.pfx{flex:none;min-width:3.1rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;font:700 1.25rem/1 "Barlow Condensed","Arial Narrow",sans-serif;cursor:pointer;padding:0 6px}
+.pfx.nonus{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 18%,var(--surface))}
+#pfxSearch{margin-bottom:10px}
+.pfxlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:6px;max-height:55vh;overflow-y:auto}
+.pfxlist button{display:flex;align-items:baseline;gap:8px;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:9px 10px;cursor:pointer;min-width:0}
+.pfxlist button b{font:700 1.2rem/1 "Barlow Condensed","Arial Narrow",sans-serif;flex:none}
+.pfxlist button span{font-size:.85rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pfxlist button.cur{border-color:var(--spruce);background:color-mix(in srgb,var(--spruce) 12%,var(--surface))}
+.pfxlist .sep{grid-column:1/-1;font-size:.8rem;color:var(--muted);margin:6px 2px 0}
 #defMode{font:600 1.2rem/1 "Barlow Condensed","Arial Narrow",sans-serif;padding:9px 10px;background:var(--surface);border:1px solid var(--line);border-radius:8px;color:var(--ink);width:100%;max-width:20rem}
 .fld select.modesel{font:600 1.3rem/1 "Barlow Condensed","Arial Narrow",sans-serif;padding:8px 8px;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--ink);width:100%;min-width:0;height:100%}
 .fld #mode[hidden]{display:none}
@@ -273,6 +291,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   <div class="mic" id="mic"></div>
 
   <section class="entry" aria-label="New contact">
+    <div class="numrow" id="numRow" hidden aria-label="Number buttons"></div>
     <div class="callrow">
       <input id="call" aria-label="Their callsign" placeholder="CALL" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
       <span class="flag dupe" id="dupeFlag" hidden>Dupe</span>
@@ -286,7 +305,9 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
         </select>
         <input class="txt" id="mode" hidden aria-label="Custom mode" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="e.g. FT8" enterkeyhint="done">
       </label>
-      <label class="fld p2pfld" id="parkFld">Their park (optional)<input class="txt" id="park" aria-label="Their park, optional, for park to park" placeholder="P2P" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done"></label>
+      <div class="fld p2pfld" id="parkFld"><span id="parkLab">Their park (optional)</span>
+        <span class="pfxrow"><button type="button" class="pfx" id="pfxBtn" aria-label="Park region: US. Tap to change">US</button><input class="txt" id="park" aria-labelledby="parkLab" inputmode="numeric" pattern="[0-9]*" placeholder="P2P" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done"></span>
+      </div>
       <datalist id="modes"><option value="SSB"><option value="CW"><option value="FM"><option value="AM"><option value="FT8"></datalist>
     </div>
 
@@ -356,6 +377,11 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
       <div class="oplist" id="deflist"></div>
     </section>
     <section class="newact" style="margin-top:12px">
+      <h3>Number buttons</h3>
+      <label class="check" style="margin-top:0"><input type="checkbox" id="numToggle"> Show a row of 0–9 buttons above the callsign</label>
+      <p class="hint" style="margin:6px 0 0">Tap them for the numbers in a callsign while you type the letters on the keyboard.</p>
+    </section>
+    <section class="newact" style="margin-top:12px">
       <h3>Default mode</h3>
       <p class="hint" style="margin:0 0 8px">Every new activation starts in this mode. You can still change the mode on the main page at any time.</p>
       <select class="txt" id="defMode" aria-label="Default mode">
@@ -390,6 +416,13 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     <textarea class="adif" id="adifBox" readonly hidden aria-label="ADIF text"></textarea>
   </div>
 </div>
+<div class="overlay" id="pfxDlg" hidden role="dialog" aria-modal="true" aria-labelledby="pfxTitle">
+  <div class="dlg">
+    <div class="dlghead"><h2 id="pfxTitle">Park region</h2><button type="button" class="topbtn" id="pfxClose">Close</button></div>
+    <input class="txt" id="pfxSearch" placeholder="Type a prefix or country, e.g. CA or Canada" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Search park regions">
+    <div class="pfxlist" id="pfxList"></div>
+  </div>
+</div>
 <div class="overlay confirm" id="cfDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cfMsg">
   <div class="dlg cfbox">
     <p id="cfMsg"></p>
@@ -402,7 +435,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
 (function(){
   const $ = id => document.getElementById(id);
   const KEY = 'potaLogger.v4';
-  const APP_VERSION_ADIF = '2026.10.19-17';
+  const APP_VERSION_ADIF = '2026.10.19-22';
   function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
@@ -698,7 +731,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   }
   function openSettings(open){
     $('setDlg').hidden = !open;
-    if(open){ renderDefList(); renderParkStatus(); renderBackupStatus(); $('defMode').value = db.defaultMode || ''; setTimeout(() => $('defAdd').focus(), 0); }
+    if(open){ renderDefList(); renderParkStatus(); renderBackupStatus(); $('defMode').value = db.defaultMode || ''; $('numToggle').checked = !!db.showNumRow; setTimeout(() => $('defAdd').focus(), 0); }
   }
 
   /* ---------- backup and restore ---------- */
@@ -779,6 +812,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     persist(); renderAll(); renderDefList(); renderBackupStatus();
     toast(choice === 'replace' ? 'Backup restored' : `Merged ${newA} activations and ${newQ} contacts`);
   });
+  $('numToggle').addEventListener('change', () => { db.showNumRow = $('numToggle').checked; persist(); $('numRow').hidden = !db.showNumRow; });
   $('defMode').addEventListener('change', () => { db.defaultMode = $('defMode').value; persist(); toast(db.defaultMode ? `New activations start in ${db.defaultMode}` : 'New activations keep the last mode'); });
   $('gearBtn').addEventListener('click', () => openSettings(true));
   $('setClose').addEventListener('click', () => openSettings(false));
@@ -889,22 +923,91 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   }
 
   /* ---------- park to park ---------- */
-  let p2p = false;
   // Their park is optional: filling it in makes the contact park to park.
+  // The number goes in the box (number pad on phones); the region button beside it defaults to US.
+  let p2p = false, pfx = 'US';
+  function parkRef(){
+    const v = $('park').value.trim();
+    if(!v) return '';
+    return /[A-Za-z]/.test(v) ? normPark(v) : normPark(pfx + '-' + v.replace(/\D/g, ''));
+  }
+  function setPfx(p){
+    pfx = p; const b = $('pfxBtn');
+    b.textContent = p; b.classList.toggle('nonus', p !== 'US');
+    b.setAttribute('aria-label', `Park region: ${p}. Tap to change`);
+    showP2PName();
+  }
   function setP2P(on){
     p2p = on;
-    if(!on) $('park').value = '';
+    if(!on){ $('park').value = ''; setPfx('US'); }
     showP2PName();
   }
   function showP2PName(){
-    const v = $('park').value.trim(), el = $('p2pName');
-    if(!p2p || !v){ el.hidden = true; el.textContent = ''; return; }
-    const ref = normPark(v), inf = parkInfo(ref);
+    const el = $('p2pName'), ref = parkRef();
+    if(!p2p || !ref){ el.hidden = true; el.textContent = ''; return; }
+    const inf = parkInfo(ref);
     el.hidden = false;
-    el.textContent = inf ? `${ref}: ${inf[0]}${inf[1] ? ' (' + inf[1] + ')' : ''}` : (parks ? `${ref} isn’t in the park list` : '');
+    el.textContent = inf ? `${ref}: ${inf[0]}${inf[1] ? ' (' + inf[1] + ')' : ''}` : (parks ? `${ref} isn’t in the park list` : ref);
   }
-  $('park').addEventListener('input', () => { p2p = !!$('park').value.trim(); showP2PName(); });
-  $('park').addEventListener('blur', () => { if($('park').value.trim()) $('park').value = normPark($('park').value); });
+  $('park').addEventListener('input', () => {
+    // a full reference typed or pasted (CA-1234) sets the region too
+    const m = $('park').value.toUpperCase().match(/^([A-Z]{2})-?(\d*)$/);
+    if(m){ setPfx(m[1]); $('park').value = m[2]; }
+    p2p = !!$('park').value.trim(); showP2PName();
+  });
+
+  /* region picker */
+  let regionNames = null;
+  try{ regionNames = new Intl.DisplayNames(['en'], {type: 'region'}); }catch(e){}
+  const regionName = p => { if(p === 'US') return 'United States'; try{ const n = regionNames && regionNames.of(p); return n && n !== p ? n : ''; }catch(e){ return ''; } };
+  const COMMON = ['US','CA','GB','AU','FR','DE','IT','ES','JP','NZ'];
+  function regionCounts(){
+    const c = new Map();
+    if(parks) for(const ref of parks.keys()){ const p = ref.slice(0, 2); c.set(p, (c.get(p) || 0) + 1); }
+    if(!c.size) COMMON.forEach(p => c.set(p, 0));
+    return c;
+  }
+  function renderPfxList(){
+    const box = $('pfxList'), q = $('pfxSearch').value.trim().toUpperCase(), counts = regionCounts();
+    let all = [...counts.keys()].sort();
+    if(q) all = all.filter(p => p.startsWith(q) || regionName(p).toUpperCase().includes(q));
+    box.innerHTML = '';
+    const btn = p => {
+      const b = document.createElement('button'); b.type = 'button'; if(p === pfx) b.className = 'cur';
+      const n = counts.get(p);
+      b.innerHTML = `<b>${esc(p)}</b><span>${esc(regionName(p) || (n ? n.toLocaleString() + ' parks' : ''))}</span>`;
+      b.addEventListener('click', () => pickPfx(p));
+      return b;
+    };
+    if(!q){
+      const sep = t => { const d = document.createElement('div'); d.className = 'sep'; d.textContent = t; box.append(d); };
+      sep('Common'); COMMON.filter(p => counts.has(p)).forEach(p => box.append(btn(p)));
+      sep('All regions'); all.forEach(p => box.append(btn(p)));
+    } else if(all.length) all.forEach(p => box.append(btn(p)));
+    else if(/^[A-Z]{2}$/.test(q)) box.append(btn(q));
+    else box.innerHTML = '<p class="hint">No region matches that.</p>';
+  }
+  function openPfx(open){
+    $('pfxDlg').hidden = !open;
+    if(open){ $('pfxSearch').value = ''; renderPfxList(); setTimeout(() => $('pfxSearch').focus(), 0); }
+  }
+  function pickPfx(p){
+    setPfx(p); openPfx(false);
+    p2p = !!$('park').value.trim(); showP2PName();
+    $('park').focus();
+  }
+  $('pfxBtn').addEventListener('click', () => openPfx(true));
+  $('pfxClose').addEventListener('click', () => openPfx(false));
+  $('pfxDlg').addEventListener('click', e => { if(e.target === $('pfxDlg')) openPfx(false); });
+  $('pfxSearch').addEventListener('input', renderPfxList);
+  $('pfxSearch').addEventListener('keydown', e => {
+    if(e.key === 'Escape'){ openPfx(false); return; }
+    if(e.key !== 'Enter') return;
+    e.preventDefault();
+    const q = $('pfxSearch').value.trim().toUpperCase();
+    const first = $('pfxList').querySelector('button');
+    if(/^[A-Z]{2}$/.test(q)) pickPfx(q); else if(first) first.click();
+  });
 
   /* ---------- logging ---------- */
   const isDupe = (call, op) => contacts().some(q => q.call === call && q.operator === op && q.band === band() && q.mode === A().mode && q.date === today());
@@ -924,7 +1027,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     if(!call){ toast('Type a callsign first'); $('call').focus(); return; }
     if(!a.operators.length){ toast('Add an operator first'); openOpEdit(); return; }
     if(a.operators.includes(call)){ toast(call + ' is an operator here'); return; }
-    const park = p2p ? normPark($('park').value.trim()) : '';
+    const park = p2p ? parkRef() : '';
     if(p2p && !park){ $('park').value = ''; p2p = false; }
     const d = new Date(), act = activeOps(), dupes = act.filter(op => isDupe(call, op));
     fresh = new Set();
@@ -1128,6 +1231,35 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     if(editing && !contacts().some(q => q.id === editing)) editing = null;
     syncFields(); renderHeader(); renderOpList(); renderDefList(); renderMic(); renderReports(); checkCall(); renderFilters(); renderLog(); renderExport();
   }
+  /* ---------- hide-keyboard button (phones and tablets) ---------- */
+  // Shows just above the on-screen keyboard while a text box is active; tapping it closes the keyboard.
+  // Tapping an empty part of the page does the same.
+  (function(){
+    const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    if(!touch) return;
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'kbhide'; btn.hidden = true; btn.setAttribute('aria-label', 'Hide keyboard');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="11" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M7 12h10"/><path d="m8 19 4 3 4-3"/></svg><span>Hide keyboard</span>';
+    document.body.append(btn);
+    const isField = el => !!el && ((el.tagName === 'INPUT' && !['checkbox','radio','button','file','submit'].includes(el.type)) || (el.tagName === 'TEXTAREA' && !el.readOnly));
+    function place(){
+      const vv = window.visualViewport;
+      const gap = vv ? Math.max(0, window.innerHeight - (vv.height + vv.offsetTop)) : 0;
+      btn.style.bottom = (gap + 8) + 'px';
+    }
+    function update(){ const on = isField(document.activeElement); btn.hidden = !on; if(on) place(); }
+    document.addEventListener('focusin', () => setTimeout(update, 60));
+    document.addEventListener('focusout', () => setTimeout(update, 60));
+    if(window.visualViewport){ window.visualViewport.addEventListener('resize', place); window.visualViewport.addEventListener('scroll', place); }
+    btn.addEventListener('pointerdown', e => e.preventDefault());
+    btn.addEventListener('click', () => { const el = document.activeElement; if(el && el.blur) el.blur(); btn.hidden = true; });
+    document.addEventListener('click', e => {
+      if(!isField(document.activeElement) || e.target === btn || btn.contains(e.target)) return;
+      if(e.target.closest && e.target.closest('input,textarea,select,button,label,a,.numrow')) return;
+      document.activeElement.blur();
+    });
+  })();
+
   let tt;
   // In-page dialogs (the browser's own confirm box is blocked where this page is hosted)
   function askChoice(message, choices){
@@ -1153,6 +1285,30 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
 
   tick(); setInterval(() => { tick(); renderHeader(); }, 5000);
   buildColumns();
+
+  /* ---------- number buttons above the callsign (optional, in Settings) ---------- */
+  // Types into the callsign box at the cursor, without closing the phone keyboard.
+  const numTarget = 'call';
+  (function buildNumRow(){
+    const row = $('numRow');
+    for(const d of ['1','2','3','4','5','6','7','8','9','0']){
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = d; b.setAttribute('aria-label', 'Type ' + d);
+      // keep focus (and the phone keyboard) in the text box
+      b.addEventListener('pointerdown', e => e.preventDefault());
+      b.addEventListener('mousedown', e => e.preventDefault());
+      b.addEventListener('click', () => {
+        const el = $(numTarget); if(!el || el.disabled) return;
+        if(document.activeElement !== el) el.focus();
+        const start = el.selectionStart != null ? el.selectionStart : el.value.length;
+        const end = el.selectionEnd != null ? el.selectionEnd : el.value.length;
+        el.value = el.value.slice(0, start) + d + el.value.slice(end);
+        try{ el.setSelectionRange(start + 1, start + 1); }catch(e){}
+        el.dispatchEvent(new Event('input', {bubbles: true}));
+      });
+      row.append(b);
+    }
+    row.hidden = !db.showNumRow;
+  })();
   persist();
   renderAll();
   if(!cur()) openActs(true);
@@ -1160,7 +1316,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   loadParks();
 
   /* ---------- Home Screen app: offline, permanent storage, reminders ---------- */
-  const APP_VERSION = '2026.10.19-17';
+  const APP_VERSION = '2026.10.19-22';
   const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   let storageNote = 'Checking storage…';
