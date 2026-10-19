@@ -104,6 +104,9 @@ input.txt{background:var(--bg);border:1px solid var(--line);border-radius:7px;pa
 .rephead span{font:600 1.05rem/1 "Barlow Condensed","Arial Narrow",sans-serif;color:var(--muted)}
 .rephead b{font:700 2.2rem/1 "Barlow Condensed","Arial Narrow",sans-serif;font-variant-numeric:tabular-nums}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}
+.col[data-part="T"]{display:none}
+.reports.cw .cols{grid-template-columns:1fr 1fr 1fr;gap:5px}
+.reports.cw .col[data-part="T"]{display:flex}
 .col{display:flex;flex-direction:column;gap:5px}
 .col .h{text-align:center;font-size:.78rem;color:var(--muted);font-weight:600}
 .num{min-height:40px;border:1px solid var(--line);background:var(--surface);border-radius:8px;font:700 1.35rem/1 "Barlow Condensed","Arial Narrow",sans-serif;color:var(--ink);cursor:pointer;touch-action:manipulation;font-variant-numeric:tabular-nums}
@@ -188,6 +191,29 @@ ol.log li.editing{display:block;background:var(--bg)}
 .head .right{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;padding:calc(20px + env(safe-area-inset-top,0px)) 12px calc(20px + env(safe-area-inset-bottom,0px));z-index:50;overflow-y:auto}
 .overlay[hidden]{display:none}
+#defMode{font:600 1.2rem/1 "Barlow Condensed","Arial Narrow",sans-serif;padding:9px 10px;background:var(--surface);border:1px solid var(--line);border-radius:8px;color:var(--ink);width:100%;max-width:20rem}
+.fld select.modesel{font:600 1.3rem/1 "Barlow Condensed","Arial Narrow",sans-serif;padding:8px 8px;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--ink);width:100%;min-width:0;height:100%}
+.fld #mode[hidden]{display:none}
+.loghead .exbtn{margin-left:auto}
+#exDlg .exrow:first-of-type{border-top:0}
+.callrow{flex-wrap:wrap}
+.callrow #call{flex:1 1 55%}
+.callrow .p2pbtn{margin-left:auto}
+.inrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.75fr) minmax(0,1fr);gap:8px;margin-top:10px}
+.p2pfld.off{visibility:hidden}
+.p2pfld input:not(:placeholder-shown){border-color:var(--amber)}
+.fld{display:flex;flex-direction:column;gap:3px;font-size:.8rem;color:var(--muted);min-width:0}
+.fld input{font:600 1.3rem/1 "Barlow Condensed","Arial Narrow",sans-serif;padding:9px 10px;text-transform:uppercase}
+
+.curedit{margin-bottom:12px}
+.dupetag{display:inline-block;margin-left:6px;vertical-align:middle;background:var(--danger);color:#fff;border-radius:4px;padding:1px 5px;font:600 .72rem/1.3 Barlow,sans-serif;letter-spacing:0}
+.mic .opbtn .x{margin-left:4px;font-size:1rem;opacity:.75}
+.mic .addop{border:1px dashed var(--line);background:transparent;border-radius:10px;padding:8px 12px;font-weight:600;color:var(--muted);cursor:pointer}
+.mic .opedit{display:flex;gap:6px;align-items:center;flex-wrap:wrap;order:-1;flex-basis:100%;padding-bottom:8px;margin-bottom:2px;border-bottom:1px solid var(--line)}
+.mic .opedit .oplab{font-size:.9rem;color:var(--muted);margin-right:2px}
+.mic .opedit input{width:9.5rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:600 1.15rem/1 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;color:var(--ink)}
+.mic .opedit button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;min-height:40px;padding:0 12px;font-weight:600;cursor:pointer}
+.mic .opedit .ok{background:var(--spruce);border-color:var(--spruce);color:var(--spruce-ink)}
 .notice{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--warn-bg);color:var(--warn-ink);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:.95rem}
 .notice span{flex:1 1 220px}
 .notice button{border:1px solid currentColor;background:transparent;color:inherit;border-radius:8px;min-height:38px;padding:0 12px;font-weight:600;cursor:pointer}
@@ -217,6 +243,9 @@ ol.acts li:first-child{border-top:0}
 ol.acts li.cur{background:color-mix(in srgb,var(--spruce) 10%,var(--surface))}
 .ap{font:700 1.3rem/1.1 "Barlow Condensed","Arial Narrow",sans-serif}
 .ap span{display:block;font:400 .85rem/1.3 Barlow,sans-serif;color:var(--muted)}
+.ap .apref{display:inline;font:inherit;color:var(--ink);margin-right:2px}
+.ap .apname{display:inline;font:inherit;color:var(--spruce)}
+.ap span b{color:var(--ink);font-weight:700}
 ol.acts button{min-height:40px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:0 12px;font-weight:600;cursor:pointer}
 ol.acts button.ld{background:var(--spruce);border-color:var(--spruce);color:var(--spruce-ink)}
 ol.acts button.rm{color:var(--danger)}
@@ -234,33 +263,12 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     <button class="topbtn" id="actBtn" type="button">Activations</button>
     <div class="past" id="hdPast" hidden></div>
     <div class="right">
-      <button class="topbtn" id="setupBtn" type="button" aria-expanded="false">Setup</button>
       <button class="gear" id="gearBtn" type="button" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></button>
     </div>
   </div>
 
   <div id="notices"></div>
 
-  <section class="setup" id="setup" hidden>
-    <h2>Setup</h2>
-    <div class="grid">
-      <label>Park <span class="band">number alone = US park</span><input class="txt" id="myPark" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="1234, or CA-1234" enterkeyhint="next"></label>
-      <label>Park name<input class="txt" id="parkName" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Filled in from the park list" enterkeyhint="next"></label>
-      <label>Frequency (MHz) <span class="band" id="bandShow"></span><input class="txt" id="freq" inputmode="decimal" autocomplete="off" placeholder="14.285" enterkeyhint="next"></label>
-      <label>Mode<input class="txt" id="mode" list="modes" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="SSB" enterkeyhint="next"></label>
-      <datalist id="modes"><option value="SSB"><option value="CW"><option value="FM"><option value="AM"></datalist>
-    </div>
-    <div class="ops">
-      <h3>Operators</h3>
-      <p>Everyone making contacts at this activation. Each operator gets their own log and their own export.</p>
-      <div class="addrow">
-        <input class="txt" id="opAdd" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Callsign" enterkeyhint="done" aria-label="Add operator callsign">
-        <button type="button" id="opAddBtn">Add</button>
-      </div>
-      <div class="oplist" id="oplist"></div>
-    </div>
-    <button class="done" type="button" id="setupDone">Done</button>
-  </section>
 
   <div class="mic" id="mic"></div>
 
@@ -270,9 +278,16 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
       <span class="flag dupe" id="dupeFlag" hidden>Dupe</span>
       <span class="flag odd" id="oddFlag" hidden>Check call</span>
     </div>
-    <div class="p2prow">
-      <button class="p2pbtn" id="p2pBtn" type="button" aria-pressed="false">Park to park</button>
-      <input class="txt" id="park" hidden aria-label="Their park" placeholder="1234, or CA-1234" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
+    <div class="inrow">
+      <label class="fld">Frequency<input class="txt" id="freq" inputmode="decimal" autocomplete="off" placeholder="ex. 14.295" enterkeyhint="done"></label>
+      <label class="fld">Mode
+        <select class="txt modesel" id="modeSel" aria-label="Mode">
+          <option value="SSB">SSB</option><option value="CW">CW</option><option value="FM">FM</option><option value="AM">AM</option>
+        </select>
+        <input class="txt" id="mode" hidden aria-label="Custom mode" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="e.g. FT8" enterkeyhint="done">
+      </label>
+      <label class="fld p2pfld" id="parkFld">Their park (optional)<input class="txt" id="park" aria-label="Their park, optional, for park to park" placeholder="P2P" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done"></label>
+      <datalist id="modes"><option value="SSB"><option value="CW"><option value="FM"><option value="AM"><option value="FT8"></datalist>
     </div>
 
     <p class="p2pname" id="p2pName" hidden></p>
@@ -282,6 +297,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
         <div class="cols">
           <div class="col" data-rep="S" data-part="R"><div class="h">R</div></div>
           <div class="col" data-rep="S" data-part="S"><div class="h">S</div></div>
+          <div class="col" data-rep="S" data-part="T"><div class="h">T</div></div>
         </div>
       </div>
       <div class="rep" id="repR">
@@ -289,6 +305,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
         <div class="cols">
           <div class="col" data-rep="R" data-part="R"><div class="h">R</div></div>
           <div class="col" data-rep="R" data-part="S"><div class="h">S</div></div>
+          <div class="col" data-rep="R" data-part="T"><div class="h">T</div></div>
         </div>
       </div>
     </div>
@@ -299,18 +316,21 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   <div class="loghead">
     <h2>Contacts</h2>
     <div class="filters" id="filters"></div>
+    <button type="button" class="topbtn exbtn" id="exBtn">Export ADIF</button>
   </div>
   <div id="logArea"></div>
 
-  <section class="export">
-    <h2>Export ADIF</h2>
-    <div id="exrows"></div>
-    <textarea class="adif" id="adifBox" readonly hidden aria-label="ADIF text"></textarea>
-  </section>
 </div>
 <div class="overlay" id="actDlg" hidden role="dialog" aria-modal="true" aria-labelledby="actTitle">
   <div class="dlg">
     <div class="dlghead"><h2 id="actTitle">Activations</h2><button type="button" class="topbtn" id="actClose">Close</button></div>
+    <section class="newact curedit" id="curEdit" hidden>
+      <h3>Open activation</h3>
+      <div class="newrow">
+        <label>Park<input class="txt" id="myPark" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="1234, or CA-1234" enterkeyhint="next"></label>
+        <label style="flex:2">Park name<input class="txt" id="parkName" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Filled in from the park list" enterkeyhint="done"></label>
+      </div>
+    </section>
     <section class="newact">
       <h3>Start a new activation</h3>
       <div class="newrow">
@@ -336,6 +356,14 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
       <div class="oplist" id="deflist"></div>
     </section>
     <section class="newact" style="margin-top:12px">
+      <h3>Default mode</h3>
+      <p class="hint" style="margin:0 0 8px">Every new activation starts in this mode. You can still change the mode on the main page at any time.</p>
+      <select class="txt" id="defMode" aria-label="Default mode">
+        <option value="">Same as the last activation</option>
+        <option value="SSB">SSB</option><option value="CW">CW</option><option value="FM">FM</option><option value="AM">AM</option>
+      </select>
+    </section>
+    <section class="newact" style="margin-top:12px">
       <h3>Park list</h3>
       <p class="hint" id="plStatus" style="margin:0 0 6px">Loading…</p>
       <p class="hint" style="margin:0 0 10px">Park names work offline from the list stored in this page. To update it, download the latest list from <a href="https://pota.app/all_parks_ext.csv" target="_blank" rel="noopener">pota.app/all_parks_ext.csv</a>, then choose that file here. The update is kept on this device.</p>
@@ -354,6 +382,14 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     </section>
   </div>
 </div>
+<div class="overlay" id="exDlg" hidden role="dialog" aria-modal="true" aria-labelledby="exTitle">
+  <div class="dlg">
+    <div class="dlghead"><h2 id="exTitle">Export ADIF</h2><button type="button" class="topbtn" id="exClose">Close</button></div>
+    <p class="hint" style="margin:0 0 8px">One file per operator, ready to upload to World Radio League or POTA.</p>
+    <div id="exrows"></div>
+    <textarea class="adif" id="adifBox" readonly hidden aria-label="ADIF text"></textarea>
+  </div>
+</div>
 <div class="overlay confirm" id="cfDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cfMsg">
   <div class="dlg cfbox">
     <p id="cfMsg"></p>
@@ -366,7 +402,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
 (function(){
   const $ = id => document.getElementById(id);
   const KEY = 'potaLogger.v4';
-  const APP_VERSION_ADIF = '2026.10.19-1';
+  const APP_VERSION_ADIF = '2026.10.19-17';
   function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
@@ -422,7 +458,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   function newActivation(park){
     const prev = cur() || db.activations[db.activations.length - 1];
     const a = {id: uid(), park, parkName: (parkInfo(park) || [])[0] || '', date: today(), created: Date.now(),
-      freq: prev ? prev.freq : '', mode: prev ? prev.mode : 'SSB',
+      freq: prev ? prev.freq : '', mode: db.defaultMode || (prev ? prev.mode : 'SSB'),
       operators: db.defaultOps.length ? [...db.defaultOps] : (prev ? [...prev.operators] : []),
       active: db.defaultOps.length ? [db.defaultOps[0]] : (prev ? [...prev.active] : [])};
     db.activations.push(a); db.currentId = a.id; persist();
@@ -524,7 +560,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     $('hdPark').textContent = (a && a.park) || (a ? 'No park set' : 'No activation');
     $('hdPark').classList.toggle('unset', !(a && a.park));
     const nm = $('hdName');
-    nm.textContent = name ? name + (loc ? ', ' + loc : '') : (!a || !a.park ? '' : parks ? 'Park name not found. Add it in Setup.' : 'Loading park list…');
+    nm.textContent = name ? name + (loc ? ', ' + loc : '') : (!a || !a.park ? '' : parks ? 'Park name not found. Add it under Activations.' : 'Loading park list…');
     nm.classList.toggle('muted', !name);
     $('hdDate').textContent = niceDate(a ? a.date : today());
     const past = a && a.date !== today();
@@ -536,7 +572,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   /* ---------- activations dialog ---------- */
   function openActs(open){
     $('actDlg').hidden = !open;
-    if(open){ renderActs(); $('newPark').value = ''; setTimeout(() => $('newPark').focus(), 0); }
+    if(open){ renderActs(); $('newPark').value = ''; $('curEdit').hidden = !cur(); syncFields(); setTimeout(() => $('newPark').focus(), 0); }
   }
   $('actBtn').addEventListener('click', () => openActs(true));
   $('actClose').addEventListener('click', () => { if(!cur()){ toast('Start or load an activation first'); return; } openActs(false); });
@@ -552,8 +588,12 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   }
   $('newStart').addEventListener('click', startNew);
   $('newPark').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); startNew(); } });
-  $('newPark').addEventListener('input', () => { const v = $('newPark').value.trim(); const inf = v ? parkInfo(normPark(v)) : null; $('newHint').textContent = (v ? normPark(v) + (inf ? ` is ${inf[0]}${inf[1] ? ' (' + inf[1] + ')' : ''}. ` : parks ? ' isn’t in the park list. You can type its name in Setup. ' : '. ') : '') + carryHint(); });
-  function carryHint(){ return db.defaultOps.length ? `Default operators (${db.defaultOps.join(', ')}) are added automatically. Frequency and mode carry over.` : 'Operators, frequency and mode carry over from the last activation. Set default operators under the gear icon.'; }
+  $('newPark').addEventListener('input', () => { const v = $('newPark').value.trim(); const inf = v ? parkInfo(normPark(v)) : null; $('newHint').textContent = (v ? normPark(v) + (inf ? ` is ${inf[0]}${inf[1] ? ' (' + inf[1] + ')' : ''}. ` : parks ? ' isn’t in the park list. You can type its name under Activations. ' : '. ') : '') + carryHint(); });
+  function carryHint(){
+    const ops = db.defaultOps.length ? `Default operators (${db.defaultOps.join(', ')}) are added automatically.` : 'Operators carry over from the last activation.';
+    const mode = db.defaultMode ? ` Mode starts as ${db.defaultMode}; frequency carries over.` : ' Frequency and mode carry over.';
+    return ops + mode + (db.defaultOps.length && db.defaultMode ? '' : ' Set defaults under the gear icon.');
+  }
   function renderActs(){
     const ol = $('actList'); ol.innerHTML = '';
     $('newHint').textContent = carryHint();
@@ -562,7 +602,11 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     for(const a of list){
       const n = db.contacts.filter(q => q.actId === a.id).length;
       const li = document.createElement('li'); if(a.id === db.currentId) li.className = 'cur';
-      li.innerHTML = `<span class="ap">${esc(actName(a) || a.park || 'No park')}<span>${actName(a) ? esc(a.park) + ', ' : ''}${niceDate(a.date)}, ${n} contact${n === 1 ? '' : 's'}${a.operators.length ? ', ' + esc(a.operators.join(', ')) : ''}</span></span>` +
+      const mdy = `${a.date.slice(4,6)}/${a.date.slice(6,8)}/${a.date.slice(0,4)}`;
+      const qs = db.contacts.filter(q => q.actId === a.id);
+      const ops = [...new Set([...a.operators, ...qs.map(q => q.operator)])].filter(Boolean);
+      const perOp = ops.map(o => `${o}: ${qs.filter(q => q.operator === o).length}`).join(', ');
+      li.innerHTML = `<span class="ap">${a.park ? `<span class="apref">${esc(a.park)}</span> ` : ''}<span class="apname">${esc(actName(a) || (a.park ? '' : 'No park'))}</span><span><b>${mdy}</b>${perOp ? ' · ' + esc(perOp) : ' · No contacts'}</span></span>` +
         (a.id === db.currentId ? '<span class="curtag">Open</span>' : '<button type="button" class="ld">Load</button>') +
         '<button type="button" class="rm" aria-label="Delete activation">Delete</button>';
       const ld = li.querySelector('.ld');
@@ -578,29 +622,60 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     }
   }
 
-  /* ---------- setup panel (edits the open activation) ---------- */
+  /* ---------- activation fields (frequency and mode on the main page, park in Activations) ---------- */
+  // Kept for older call sites: steers to whatever is missing.
   function openSetup(open){
-    if(open && !cur()){ openActs(true); return; }
-    $('setup').hidden = !open; $('setupBtn').setAttribute('aria-expanded', String(open));
-    $('setupBtn').textContent = open ? 'Close setup' : 'Setup';
-    if(open){ ['myPark','freq','mode'].forEach(id => { $(id).value = A()[id === 'myPark' ? 'park' : id] || ''; }); $('parkName').value = actName(A()); $('freq').dispatchEvent(new Event('input')); }
+    if(!open) return;
+    if(!cur()){ openActs(true); return; }
+    if(!A().operators.length) openOpEdit(); else $('freq').focus();
   }
-  $('setupBtn').addEventListener('click', () => openSetup($('setup').hidden));
-  $('setupDone').addEventListener('click', () => { ['myPark','parkName','freq','mode'].forEach(commit); openSetup(false); $('call').focus(); });
+  // Mode: SSB, CW, FM or AM. An older activation saved with another mode keeps it as an extra entry.
+  const MODE_LIST = ['SSB','CW','FM','AM'];
+  function syncModeSel(){
+    const m = A().mode || 'SSB', sel = $('modeSel');
+    [...sel.options].forEach(o => { if(o.dataset.legacy && o.value !== m) o.remove(); });
+    if(![...sel.options].some(o => o.value === m)){ const o = new Option(m, m); o.dataset.legacy = '1'; sel.add(o); }
+    sel.value = m;
+  }
+  $('modeSel').addEventListener('change', () => { $('mode').value = $('modeSel').value; commit('mode'); });
+  function syncFields(){
+    const a = A();
+    const set = (id, v) => { const el = $(id); if(el && document.activeElement !== el) el.value = v || ''; };
+    set('freq', a.freq); set('mode', a.mode); set('myPark', a.park); set('parkName', cur() ? actName(a) : '');
+    ['freq','mode','modeSel'].forEach(id => { $(id).disabled = !cur(); });
+    syncModeSel();
+  }
   function commit(id){
     const a = cur(); if(!a) return;
     let v = $(id).value.trim();
     if(id === 'freq'){ v = normFreq(v); a.freq = v; }
-    else if(id === 'myPark'){ v = v ? normPark(v) : ''; if(v !== a.park){ a.park = v; a.parkName = (parkInfo(v) || [])[0] || ''; $('parkName').value = a.parkName; } }
+    else if(id === 'myPark'){
+      v = v ? normPark(v) : '';
+      if(v !== a.park){
+        const old = a.park; a.park = v; a.parkName = (parkInfo(v) || [])[0] || ''; $('parkName').value = a.parkName;
+        // offer to move contacts already logged under the old park (for fixing a typo)
+        const logged = contacts().filter(q => q.myPark === old);
+        if(old && v && logged.length){
+          askConfirm(`Also change the ${logged.length} contact${logged.length === 1 ? '' : 's'} already logged at ${old} to ${v}?`, 'Change them').then(yes => {
+            if(yes){ logged.forEach(q => { q.myPark = v; }); persist(); renderAll(); toast(`Moved ${logged.length} contact${logged.length === 1 ? '' : 's'} to ${v}`); }
+          });
+        }
+      }
+    }
     else if(id === 'parkName'){ a.parkName = v; }
     else { v = v.toUpperCase(); if(v === 'USB' || v === 'LSB' || !v) v = 'SSB'; if(v !== a.mode){ a.mode = v; resetReports(); } }
     $(id).value = v; persist(); renderAll();
   }
-  ['myPark','parkName','freq','mode'].forEach((id, i, arr) => {
+  ['myPark','parkName','freq','mode'].forEach(id => {
     $(id).addEventListener('change', () => commit(id));
-    $(id).addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); commit(id); $(arr[i+1] || 'opAdd').focus(); } });
+    $(id).addEventListener('keydown', e => {
+      if(e.key !== 'Enter') return;
+      e.preventDefault(); commit(id);
+      if(id === 'myPark') $('parkName').focus();
+      else if(id === 'parkName') $(id).blur();
+      else $('call').focus();
+    });
   });
-  $('freq').addEventListener('input', () => { const b = bandFor(normFreq($('freq').value)); $('bandShow').textContent = b ? '· ' + b : ''; });
 
   function addOperators(){
     const a = cur(); if(!a) return;
@@ -612,8 +687,6 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     $('opAdd').value = '';
     if(added){ if(!a.active.length) a.active = [a.operators[0]]; persist(); renderAll(); }
   }
-  $('opAddBtn').addEventListener('click', addOperators);
-  $('opAdd').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); addOperators(); } });
   function addDefaults(){
     let added = 0;
     for(const c of $('defAdd').value.toUpperCase().split(/[\s,;]+/).filter(Boolean)){
@@ -625,7 +698,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   }
   function openSettings(open){
     $('setDlg').hidden = !open;
-    if(open){ renderDefList(); renderParkStatus(); renderBackupStatus(); setTimeout(() => $('defAdd').focus(), 0); }
+    if(open){ renderDefList(); renderParkStatus(); renderBackupStatus(); $('defMode').value = db.defaultMode || ''; setTimeout(() => $('defAdd').focus(), 0); }
   }
 
   /* ---------- backup and restore ---------- */
@@ -636,7 +709,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   }
   function backupText(){
     return JSON.stringify({app: 'potaLogger', version: 4, exported: new Date().toISOString(),
-      activations: db.activations, contacts: db.contacts, defaultOps: db.defaultOps, currentId: db.currentId}, null, 1);
+      activations: db.activations, contacts: db.contacts, defaultOps: db.defaultOps, defaultMode: db.defaultMode || '', currentId: db.currentId}, null, 1);
   }
   function markBackedUp(){
     const d = new Date(); db.lastBackup = `${niceDate(ymd(d))} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC`;
@@ -692,18 +765,21 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
       if(db.contacts.length && !await askConfirm(`Delete all ${db.activations.length} activations and ${db.contacts.length} contacts on this device and replace them with the backup?`, 'Replace all')) return;
       db.activations = data.activations; db.contacts = data.contacts;
       db.defaultOps = Array.isArray(data.defaultOps) ? data.defaultOps : db.defaultOps;
+      if(typeof data.defaultMode === 'string') db.defaultMode = data.defaultMode;
       db.currentId = db.activations.some(a => a.id === data.currentId) ? data.currentId : (db.activations[db.activations.length - 1] || {}).id || null;
     } else {
       db.activations.push(...data.activations.filter(a => !haveA.has(a.id)));
       db.contacts.push(...data.contacts.filter(q => !haveQ.has(q.id)));
       db.contacts.sort((x, y) => (y.date + y.time).localeCompare(x.date + x.time));
       for(const o of data.defaultOps || []) if(!db.defaultOps.includes(o)) db.defaultOps.push(o);
+      if(!db.defaultMode && data.defaultMode) db.defaultMode = data.defaultMode;
       if(!cur()) db.currentId = (db.activations[db.activations.length - 1] || {}).id || null;
     }
     editing = null; fresh = new Set();
     persist(); renderAll(); renderDefList(); renderBackupStatus();
     toast(choice === 'replace' ? 'Backup restored' : `Merged ${newA} activations and ${newQ} contacts`);
   });
+  $('defMode').addEventListener('change', () => { db.defaultMode = $('defMode').value; persist(); toast(db.defaultMode ? `New activations start in ${db.defaultMode}` : 'New activations keep the last mode'); });
   $('gearBtn').addEventListener('click', () => openSettings(true));
   $('setClose').addEventListener('click', () => openSettings(false));
   $('setDlg').addEventListener('click', e => { if(e.target === $('setDlg')) openSettings(false); });
@@ -721,7 +797,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     }
   }
   function renderOpList(){
-    const box = $('oplist'); box.innerHTML = '';
+    const box = $('oplist'); if(!box) return; box.innerHTML = '';
     for(const c of A().operators){
       const t = document.createElement('span'); t.className = 'optag';
       t.innerHTML = `${esc(c)}<button type="button" aria-label="Remove ${esc(c)}">×</button>`;
@@ -735,13 +811,21 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     }
   }
 
-  /* ---------- who is logging ---------- */
+  /* ---------- who is logging (and adding/removing operators) ---------- */
+  let opEdit = false;
+  function openOpEdit(){ opEdit = true; renderMic(); setTimeout(() => { const i = $('opAdd'); if(i) i.focus(); }, 0); }
+  async function removeOperator(c){
+    const a = cur(); if(!a) return;
+    if(countFor(c) && !await askConfirm(`${c} has contacts in this activation. Remove them as an operator? Their contacts stay in the log.`, 'Remove')) return;
+    a.operators = a.operators.filter(o => o !== c); a.active = a.active.filter(o => o !== c);
+    persist(); renderAll();
+  }
   function renderMic(){
     const box = $('mic'); box.innerHTML = '';
     const a = A();
     if(!cur()){ box.innerHTML = '<div class="warnbox">Start or load an activation to begin logging.</div>'; $('logWho').textContent = ''; return; }
-    if(!a.operators.length){ box.innerHTML = '<div class="warnbox">Add at least one operator in Setup so contacts are logged under the right call.</div>'; $('logWho').textContent = ''; return; }
-    const lab = document.createElement('span'); lab.className = 'lab'; lab.textContent = 'Logging for';
+    if(!a.operators.length) opEdit = true;
+    const lab = document.createElement('span'); lab.className = 'lab'; lab.textContent = a.operators.length ? 'Logging for' : 'Add an operator to start logging';
     box.append(lab);
     const act = activeOps();
     for(const c of a.operators){
@@ -749,8 +833,10 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
       const b = document.createElement('button'); b.type = 'button';
       b.className = 'opbtn' + (on ? ' on' : '') + (n >= 10 ? ' full' : '');
       b.setAttribute('aria-pressed', String(on));
-      b.innerHTML = `${esc(c)} <small>${n >= 10 ? n + ' ✓' : n + '/10'}</small>`;
+      b.innerHTML = `${esc(c)} <small>${n >= 10 ? n + ' ✓' : n + '/10'}</small>` + (opEdit ? '<span class="x" aria-hidden="true">×</span>' : '');
+      if(opEdit) b.setAttribute('aria-label', 'Remove ' + c);
       b.addEventListener('click', () => {
+        if(opEdit){ removeOperator(c); return; }
         let sel = activeOps();
         if(sel.includes(c)){
           if(sel.length === 1){ toast('At least one operator has to be logging'); return; }
@@ -761,20 +847,33 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
       });
       box.append(b);
     }
-    $('logWho').textContent = act.length > 1 ? `for ${act.join(' + ')}` : `as ${act[0]}`;
+    if(opEdit){
+      const w = document.createElement('span'); w.className = 'opedit';
+      w.innerHTML = '<span class="oplab">Add operator</span><input id="opAdd" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Callsign" enterkeyhint="done" aria-label="Add operator callsign"><button type="button" class="ok">Add</button>' + (a.operators.length ? '<button type="button" class="dn">Done</button>' : '');
+      w.querySelector('.ok').addEventListener('click', () => { addOperators(); openOpEdit(); });
+      w.querySelector('input').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); addOperators(); openOpEdit(); } if(e.key === 'Escape' && a.operators.length){ opEdit = false; renderMic(); } });
+      const dn = w.querySelector('.dn'); if(dn) dn.addEventListener('click', () => { opEdit = false; renderMic(); $('call').focus(); });
+      box.append(w);
+    } else {
+      const add = document.createElement('button'); add.type = 'button'; add.className = 'addop'; add.textContent = 'Edit operators';
+      add.addEventListener('click', openOpEdit);
+      box.append(add);
+    }
+    $('logWho').textContent = !act.length ? '' : act.length > 1 ? `for ${act.join(' + ')}` : `as ${act[0]}`;
   }
 
   /* ---------- signal report buttons ---------- */
-  const report = {S:{R:5, S:9}, R:{R:5, S:9}};
-  function resetReports(){ report.S = {R:5, S:9}; report.R = {R:5, S:9}; renderReports(); }
-  const tone = () => A().mode === 'CW' ? '9' : '';
-  const rstText = r => `${r.R}${r.S}${tone()}`;
+  // R (1-5) and S (1-9) always; T (tone, 1-9) as well in CW
+  const report = {S:{R:5, S:9, T:9}, R:{R:5, S:9, T:9}};
+  function resetReports(){ report.S = {R:5, S:9, T:9}; report.R = {R:5, S:9, T:9}; renderReports(); }
+  const isCW = () => A().mode === 'CW';
+  const rstText = r => `${r.R}${r.S}${isCW() ? r.T : ''}`;
   function buildColumns(){
     document.querySelectorAll('.col').forEach(col => {
       const rep = col.dataset.rep, part = col.dataset.part;
       for(let n = part === 'R' ? 5 : 9; n >= 1; n--){
         const b = document.createElement('button'); b.type = 'button'; b.className = 'num'; b.textContent = n; b.dataset.n = n;
-        b.setAttribute('aria-label', `${rep === 'S' ? 'Sent' : 'Received'} ${part === 'R' ? 'readability' : 'strength'} ${n}`);
+        b.setAttribute('aria-label', `${rep === 'S' ? 'Sent' : 'Received'} ${part === 'R' ? 'readability' : part === 'S' ? 'strength' : 'tone'} ${n}`);
         b.addEventListener('click', () => { report[rep][part] = n; renderReports(); });
         col.append(b);
       }
@@ -785,14 +884,16 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
       const rep = col.dataset.rep, part = col.dataset.part;
       col.querySelectorAll('.num').forEach(b => { const sel = +b.dataset.n === report[rep][part]; b.classList.toggle('sel', sel); b.setAttribute('aria-pressed', String(sel)); });
     });
+    document.querySelector('.reports').classList.toggle('cw', isCW());
     $('outS').textContent = rstText(report.S); $('outR').textContent = rstText(report.R);
   }
 
   /* ---------- park to park ---------- */
   let p2p = false;
+  // Their park is optional: filling it in makes the contact park to park.
   function setP2P(on){
-    p2p = on; $('p2pBtn').classList.toggle('on', on); $('p2pBtn').setAttribute('aria-pressed', String(on));
-    $('park').hidden = !on; if(on) $('park').focus(); else $('park').value = '';
+    p2p = on;
+    if(!on) $('park').value = '';
     showP2PName();
   }
   function showP2PName(){
@@ -802,8 +903,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     el.hidden = false;
     el.textContent = inf ? `${ref}: ${inf[0]}${inf[1] ? ' (' + inf[1] + ')' : ''}` : (parks ? `${ref} isn’t in the park list` : '');
   }
-  $('park').addEventListener('input', showP2PName);
-  $('p2pBtn').addEventListener('click', () => setP2P(!p2p));
+  $('park').addEventListener('input', () => { p2p = !!$('park').value.trim(); showP2PName(); });
   $('park').addEventListener('blur', () => { if($('park').value.trim()) $('park').value = normPark($('park').value); });
 
   /* ---------- logging ---------- */
@@ -822,10 +922,10 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     if(!a){ openActs(true); return; }
     const call = $('call').value.trim().toUpperCase();
     if(!call){ toast('Type a callsign first'); $('call').focus(); return; }
-    if(!a.operators.length){ toast('Add an operator in Setup first'); openSetup(true); return; }
+    if(!a.operators.length){ toast('Add an operator first'); openOpEdit(); return; }
     if(a.operators.includes(call)){ toast(call + ' is an operator here'); return; }
     const park = p2p ? normPark($('park').value.trim()) : '';
-    if(p2p && !park){ toast('Type their park, or turn off Park to park'); $('park').focus(); return; }
+    if(p2p && !park){ $('park').value = ''; p2p = false; }
     const d = new Date(), act = activeOps(), dupes = act.filter(op => isDupe(call, op));
     fresh = new Set();
     for(const op of act){
@@ -846,7 +946,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   function renderFilters(){
     const box = $('filters'); box.innerHTML = '';
     const ops = A().operators;
-    if(activeOps().length > 1 || ops.length < 2) return;
+    return; // the list always follows the operators selected under "Logging for"
     for(const f of ['all', ...ops]){
       const b = document.createElement('button'); b.type = 'button'; b.className = f === filter ? 'on' : '';
       b.textContent = f === 'all' ? 'All' : f;
@@ -855,12 +955,13 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     }
   }
   const PENCIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+  let dupeIds = new Set();
   function rowFor(q, showOp){
     const li = document.createElement('li');
     if(editing === q.id) return editorFor(q, li);
     if(fresh.has(q.id)) li.className = 'fresh';
-    const extra = [q.p2p && 'P2P ' + q.p2p, q.freq ? q.freq + ' MHz' : q.band, q.mode, showOp ? q.operator : ''].filter(Boolean).join(', ');
-    li.innerHTML = `<span class="t">${q.time.slice(0,2)}:${q.time.slice(2,4)}</span><span class="c">${esc(q.call)}<span>${esc(extra)}</span></span><span class="r">${esc(q.rstS)}<br>${esc(q.rstR)}</span><button class="edt" type="button" aria-label="Edit ${esc(q.call)}">${PENCIL}</button><button class="del" type="button" aria-label="Delete ${esc(q.call)}">×</button>`;
+    const extra = [q.freq || q.band, q.mode, showOp ? q.operator : ''].filter(Boolean).join(', ');
+    li.innerHTML = `<span class="t">${q.time.slice(0,2)}:${q.time.slice(2,4)}</span><span class="c">${esc(q.call)}${dupeIds.has(q.id) ? '<b class="dupetag">Dupe</b>' : ''}<span>${esc(extra)}</span>${q.p2p ? `<span>P2P ${esc(q.p2p)}</span>` : ''}</span><span class="r">${esc(q.rstS)}<br>${esc(q.rstR)}</span><button class="edt" type="button" aria-label="Edit ${esc(q.call)}">${PENCIL}</button><button class="del" type="button" aria-label="Delete ${esc(q.call)}">×</button>`;
     li.querySelector('.edt').addEventListener('click', () => { editing = q.id; armed = null; renderLog(); });
     const del = li.querySelector('.del');
     if(armed === q.id){ del.classList.add('arm'); del.textContent = 'Delete'; }
@@ -918,9 +1019,19 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     else rows.forEach(q => ol.append(rowFor(q, showOp)));
     return ol;
   }
+  // The first contact with a station counts; later ones on the same band, mode, UTC day and operator are dupes.
+  function findDupes(all){
+    const seen = new Set(), ids = new Set();
+    for(const q of [...all].sort((x, y) => (x.date + x.time + x.id).localeCompare(y.date + y.time + y.id))){
+      const k = [q.operator, q.call, q.band, q.mode, q.date].join('|');
+      if(seen.has(k)) ids.add(q.id); else seen.add(k);
+    }
+    return ids;
+  }
   function renderLog(){
     const area = $('logArea'); area.innerHTML = '';
     const act = activeOps(), all = contacts();
+    dupeIds = findDupes(all);
     if(act.length > 1){
       const grid = document.createElement('div'); grid.className = 'logcols'; grid.style.setProperty('--n', Math.min(act.length, 3));
       for(const op of act){
@@ -931,8 +1042,8 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
       }
       area.append(grid); return;
     }
-    const rows = all.filter(q => filter === 'all' || q.operator === filter);
-    area.append(listOf(rows, A().operators.length > 1 && filter === 'all', cur() ? 'No contacts yet. Type a call above and tap Log it.' : 'No activation open.'));
+    const rows = all.filter(q => act.includes(q.operator));
+    area.append(listOf(rows, false, cur() ? (act.length ? `No contacts for ${act[0]} yet. Type a call above and tap Log it.` : 'Add an operator to start logging.') : 'No activation open.'));
   }
 
   /* ---------- ADIF, one file per operator ---------- */
@@ -959,6 +1070,17 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     try{ return document.execCommand('copy'); }catch(e){ return false; }
   }
   let shownOp = null;
+  function openExport(open){
+    $('exDlg').hidden = !open;
+    if(open) renderExport(); else { shownOp = null; $('adifBox').hidden = true; }
+  }
+  $('exBtn').addEventListener('click', () => {
+    if(!contacts().length){ toast('No contacts to export yet'); return; }
+    openExport(true);
+  });
+  $('exClose').addEventListener('click', () => openExport(false));
+  $('exDlg').addEventListener('click', e => { if(e.target === $('exDlg')) openExport(false); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && !$('exDlg').hidden) openExport(false); });
   function renderExport(){
     const box = $('exrows'); box.innerHTML = '';
     const all = contacts();
@@ -1002,10 +1124,9 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
 
   /* ---------- render ---------- */
   function renderAll(){
-    $('bandShow').textContent = band() ? '· ' + band() : '';
     if(filter !== 'all' && !A().operators.includes(filter)) filter = 'all';
     if(editing && !contacts().some(q => q.id === editing)) editing = null;
-    renderHeader(); renderOpList(); renderDefList(); renderMic(); renderReports(); checkCall(); renderFilters(); renderLog(); renderExport();
+    syncFields(); renderHeader(); renderOpList(); renderDefList(); renderMic(); renderReports(); checkCall(); renderFilters(); renderLog(); renderExport();
   }
   let tt;
   // In-page dialogs (the browser's own confirm box is blocked where this page is hosted)
@@ -1039,7 +1160,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   loadParks();
 
   /* ---------- Home Screen app: offline, permanent storage, reminders ---------- */
-  const APP_VERSION = '2026.10.19-1';
+  const APP_VERSION = '2026.10.19-17';
   const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   let storageNote = 'Checking storage…';
