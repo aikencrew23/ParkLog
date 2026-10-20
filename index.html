@@ -432,7 +432,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
 (function(){
   const $ = id => document.getElementById(id);
   const KEY = 'potaLogger.v4';
-  const APP_VERSION_ADIF = '2026.10.19-23';
+  const APP_VERSION_ADIF = '2026.10.19-24';
   function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
@@ -612,6 +612,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     const raw = $('newPark').value.trim();
     if(!raw){ toast('Type the park number'); $('newPark').focus(); return; }
     const a = newActivation(normPark(raw));
+    opEdit = !a.operators.length;
     openActs(false); renderAll();
     toast('Started ' + a.park);
     if(!a.operators.length || !a.freq) openSetup(true); else $('call').focus();
@@ -640,7 +641,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
         (a.id === db.currentId ? '<span class="curtag">Open</span>' : '<button type="button" class="ld">Load</button>') +
         '<button type="button" class="rm" aria-label="Delete activation">Delete</button>';
       const ld = li.querySelector('.ld');
-      if(ld) ld.addEventListener('click', () => { db.currentId = a.id; persist(); openActs(false); editing = null; fresh = new Set(); renderAll(); toast('Loaded ' + (a.park || 'activation')); });
+      if(ld) ld.addEventListener('click', () => { db.currentId = a.id; opEdit = !a.operators.length; persist(); openActs(false); editing = null; fresh = new Set(); renderAll(); toast('Loaded ' + (a.park || 'activation')); });
       li.querySelector('.rm').addEventListener('click', async () => {
         if(!await askConfirm(`Delete ${actName(a) ? actName(a) + ' (' + a.park + ')' : a.park || 'this activation'} from ${niceDate(a.date)} and its ${n} contact${n === 1 ? '' : 's'}? This can’t be undone, so export first if you need them.`, 'Delete activation')) return;
         db.activations = db.activations.filter(x => x.id !== a.id);
@@ -1297,7 +1298,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   loadParks();
 
   /* ---------- Home Screen app: offline, permanent storage, reminders ---------- */
-  const APP_VERSION = '2026.10.19-23';
+  const APP_VERSION = '2026.10.19-24';
   const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   let storageNote = 'Checking storage…';
