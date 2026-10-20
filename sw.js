@@ -1,6 +1,6 @@
 // ParkLog service worker: makes the app open and run with no connection.
 // When you publish a new version, change VERSION so everyone's copy updates.
-const VERSION = '2026.10.19-22';
+const VERSION = '2026.10.19-23';
 const CACHE = 'pota-logger-' + VERSION;
 const APP_FILES = [
   './',

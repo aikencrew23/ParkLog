@@ -191,9 +191,6 @@ ol.log li.editing{display:block;background:var(--bg)}
 .head .right{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;padding:calc(20px + env(safe-area-inset-top,0px)) 12px calc(20px + env(safe-area-inset-bottom,0px));z-index:50;overflow-y:auto}
 .overlay[hidden]{display:none}
-.kbhide{position:fixed;right:10px;bottom:10px;z-index:55;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:600 .95rem/1 Barlow,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.18);cursor:pointer}
-.kbhide[hidden]{display:none}
-.kbhide svg{width:20px;height:20px}
 .numrow{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;margin-bottom:10px}
 .numrow[hidden]{display:none}
 .numrow button{min-height:42px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;font:700 1.35rem/1 "Barlow Condensed","Arial Narrow",sans-serif;cursor:pointer;touch-action:manipulation;padding:0;-webkit-user-select:none;user-select:none}
@@ -435,7 +432,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
 (function(){
   const $ = id => document.getElementById(id);
   const KEY = 'potaLogger.v4';
-  const APP_VERSION_ADIF = '2026.10.19-22';
+  const APP_VERSION_ADIF = '2026.10.19-23';
   function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
@@ -1231,30 +1228,14 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
     if(editing && !contacts().some(q => q.id === editing)) editing = null;
     syncFields(); renderHeader(); renderOpList(); renderDefList(); renderMic(); renderReports(); checkCall(); renderFilters(); renderLog(); renderExport();
   }
-  /* ---------- hide-keyboard button (phones and tablets) ---------- */
-  // Shows just above the on-screen keyboard while a text box is active; tapping it closes the keyboard.
-  // Tapping an empty part of the page does the same.
+  /* ---------- closing the keyboard (phones and tablets) ---------- */
+  // Tapping an empty part of the page takes the cursor out of the text box, which closes the keyboard.
   (function(){
     const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
     if(!touch) return;
-    const btn = document.createElement('button');
-    btn.type = 'button'; btn.className = 'kbhide'; btn.hidden = true; btn.setAttribute('aria-label', 'Hide keyboard');
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="11" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M7 12h10"/><path d="m8 19 4 3 4-3"/></svg><span>Hide keyboard</span>';
-    document.body.append(btn);
     const isField = el => !!el && ((el.tagName === 'INPUT' && !['checkbox','radio','button','file','submit'].includes(el.type)) || (el.tagName === 'TEXTAREA' && !el.readOnly));
-    function place(){
-      const vv = window.visualViewport;
-      const gap = vv ? Math.max(0, window.innerHeight - (vv.height + vv.offsetTop)) : 0;
-      btn.style.bottom = (gap + 8) + 'px';
-    }
-    function update(){ const on = isField(document.activeElement); btn.hidden = !on; if(on) place(); }
-    document.addEventListener('focusin', () => setTimeout(update, 60));
-    document.addEventListener('focusout', () => setTimeout(update, 60));
-    if(window.visualViewport){ window.visualViewport.addEventListener('resize', place); window.visualViewport.addEventListener('scroll', place); }
-    btn.addEventListener('pointerdown', e => e.preventDefault());
-    btn.addEventListener('click', () => { const el = document.activeElement; if(el && el.blur) el.blur(); btn.hidden = true; });
     document.addEventListener('click', e => {
-      if(!isField(document.activeElement) || e.target === btn || btn.contains(e.target)) return;
+      if(!isField(document.activeElement)) return;
       if(e.target.closest && e.target.closest('input,textarea,select,button,label,a,.numrow')) return;
       document.activeElement.blur();
     });
@@ -1316,7 +1297,7 @@ ol.acts .curtag{font-size:.85rem;font-weight:600;color:var(--ok);padding:0 6px}
   loadParks();
 
   /* ---------- Home Screen app: offline, permanent storage, reminders ---------- */
-  const APP_VERSION = '2026.10.19-22';
+  const APP_VERSION = '2026.10.19-23';
   const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   let storageNote = 'Checking storage…';
